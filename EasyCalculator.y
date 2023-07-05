@@ -64,7 +64,24 @@ char lex[255];
 void yyerror(char *);
 int yylex();
 
-
+int loopsum(int min, int max,char *loop){
+	int sum=0;
+	printf("%s\n",loop);
+	if(strcmp(loop,"for")==0){
+		for(int i=min; i<=max;i++){
+			sum=sum+i;	
+		}
+		return sum;
+	}
+	if(strcmp(loop,"while")==0){
+		int j=min;
+		while(j<=max){
+			sum=sum+j;
+			j=j+1;
+		}
+		return sum;
+	}
+}
 
 int factorial(int num){
 	int f=1;
@@ -167,7 +184,7 @@ void imprimeTablaCod(){
 
 %}
 
-%token NUMBER SUMANDO RESTANDO MULTIPLICANDO DIVIDIENDO MAS MENOS MUL DIV SIN COS TAN LOG NLOG SQRT POW SINH COSH TANH ASIN ACOS ATAN ABS SUM HELP ADD MULT MATRIX
+%token NUMBER SUMANDO RESTANDO MULTIPLICANDO DIVIDIENDO MAS MENOS MUL DIV SIN COS TAN LOG NLOG SQRT POW SINH COSH TANH ASIN ACOS ATAN ABS SUM HELP ADD MULT MATRIX  FOR WHILE DESDE HASTA
 
 %%
 prog: expr '\n'   prog { 	printf("tabla de simbolos\n");
@@ -188,10 +205,16 @@ expr: expr MAS term  	{ $$ = $1 + $3; int i=GenVarTemp(); generaCodigo(SUMANDO,i
 	|op
 	|graphic
 	|h
-	
+	|programa
 	;
 h: HELP {help();}
  ;
+
+programa: SUM FOR  DESDE NUMBER HASTA NUMBER {$$=loopsum($4,$6,"for");}
+	| SUM WHILE  DESDE NUMBER HASTA NUMBER {$$=loopsum($4,$6,"while");}
+	;
+
+
 term: term MUL mm {$$=$1 * $3;int i=GenVarTemp(); generaCodigo(MULTIPLICANDO,i,$1,$3);}
 	| term DIV mm {$$=$1 / $3;int i=GenVarTemp(); generaCodigo(DIVIDIENDO,i,$1,$3);}
 	| mm
@@ -306,6 +329,10 @@ int yylex(void)
 		if(strcmp(lex,"matrices")==0) return MATRIX;
 		if(strcmp(lex,"add")==0) return ADD;
 		if(strcmp(lex,"mult")==0) return MULT;
+		if(strcmp(lex,"desde")==0) return DESDE;
+		if(strcmp(lex,"hasta")==0) return HASTA;
+		if(strcmp(lex,"for")==0) return FOR;
+		if(strcmp(lex,"while")==0) return WHILE;
 		
 		
 	}
