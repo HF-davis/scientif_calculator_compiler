@@ -1,7 +1,9 @@
 import tkinter as tk
 import os
 import re
-from math import sin,cos,tan
+import numpy as np
+import matplotlib.pyplot as plt
+from math import sin,cos,tan,atan,acos,asin
 calculation=""
 
 def factorial(num):
@@ -9,18 +11,42 @@ def factorial(num):
 	for j in range(1,num+1):
 		i=j*i
 	return i
-		
+
+
+
+
 def add_to_calculation(symbol):
 	global calculation
 	calculation += str(symbol)
-		
 	text_result.delete(1.0,"end")
 	text_result.insert(1.0,calculation)
+
+def graph():
 	
+	ex="(-?\d+(\.\d+)?)"
+	#cal="sin(-3.14159,3.14159)"
+	yacc_code=text_result.get(1.0,tk.END)
+	patron=re.compile(ex)
+	min,max=[float(i[0]) for i in patron.findall(yacc_code)]
+	func=re.findall("[a-z]+",yacc_code)[0]
+	#yacc_code=text_result.get(1.0,tk.END)
+
+	with open("tt.txt","w") as file:
+			file.write(yacc_code)
+	cmd='./a.out <tt.txt'
+	os.system(cmd)
+	x=np.arange(min,max,0.1)
+	y=np.array([eval("np."+func+"({})".format(str(i))) for i in x])
+	plt.plot(x,y)
+	plt.show()
+	
+	 
+
 def evaluate_calculation():
 	global calculation
 	ex=r"(\d+)!"
 	patron=re.compile(ex)
+
 	if patron.match(calculation):
 		val=int(patron.findall(calculation)[0])
 		fac=factorial(val)
@@ -105,10 +131,22 @@ btn_close=tk.Button(root,text=".",command=lambda: add_to_calculation("."),width=
 btn_close.grid(row=6,column=4,padx=2,pady=2)
 
 btn_imp=tk.Button(root,text="!",command=lambda: add_to_calculation("!"),width=5,font=("Arial",14),bg='#161414',fg='white')
-btn_imp.grid(row=7,column=2,padx=2,pady=2)
+btn_imp.grid(row=7,column=4,padx=2,pady=2)
+
+btn_graph=tk.Button(root,text="graph",command=graph,width=5,font=("Arial",14),bg='#161414',fg='white')
+btn_graph.grid(row=7,column=3,padx=2,pady=2)
+
+btn_asin=tk.Button(root,text="asin",command=lambda: add_to_calculation("asin"),width=5,font=("Arial",14),bg='#161414',fg='white')
+btn_asin.grid(row=7,column=1,padx=2,pady=2)
+
+btn_acos=tk.Button(root,text="acos",command=lambda: add_to_calculation("acos"),width=5,font=("Arial",14),bg='#161414',fg='white')
+btn_acos.grid(row=7,column=2,padx=2,pady=2)
+
+btn_coma=tk.Button(root,text=",",command=lambda: add_to_calculation(","),width=5,font=("Arial",14),bg='#161414',fg='white')
+btn_coma.grid(row=8,column=4,padx=2,pady=2)
 
 btn_clear=tk.Button(root,text="C",command=clear_field,width=11,font=("Arial",14),bg='#161414',fg='white')
-btn_clear.grid(row=8,column=1,columnspan=2,padx=2,pady=2)
+btn_clear.grid(row=9,column=1,columnspan=2,padx=2,pady=2)
 btn_equals=tk.Button(root,text="=",command=evaluate_calculation,width=11,font=("Arial",14),bg='#161414',fg='white')
-btn_equals.grid(row=8,column=3,columnspan=2,padx=2,pady=2)
+btn_equals.grid(row=9,column=3,columnspan=2,padx=2,pady=2)
 root.mainloop()
