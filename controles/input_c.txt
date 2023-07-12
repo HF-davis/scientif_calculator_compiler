@@ -1,0 +1,11 @@
+Program MiProg;
+Begin
+	y:=5;
+	
+	def suma():
+		Begin
+			m:=4;	
+		End
+	
+	k:=11;
+End.
